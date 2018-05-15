@@ -4,8 +4,8 @@
 
 # Site
 title:  Kevin
-subtitle:  刻苦学习，解决眼前的苟且，追寻诗和远方...
-description: 
+subtitle: 敲过的代码，走过的路，都是你人生的轨迹。加油！    Talk is cheap. Show me the code.
+description: 刻苦学习，解决眼前的苟且，追寻诗和远方...
 # keywords:
 author: Kevin
 language: zh-Hans
@@ -81,7 +81,7 @@ deploy:
   type: git     #部署的类型
   repository: git@github.com:wyigui/wyigui.github.io.git # 仓库地址
   branch: master        #分支名称
-  message: hexo deploy  #提交信息
+  message: blog deploy  #提交信息
 
 search:
   path: search.xml
