@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <url>%2F2018%2F07%2F17%2Fhello-world%2F</url>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[MySQL升级8.0后数据库连不上]]></title>
+    <url>%2F2018%2F06%2F01%2FMySQL%E5%8D%87%E7%BA%A78-0%E5%90%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E4%B8%8D%E4%B8%8A%2F</url>
+    <content type="text"><![CDATA[主要是因为驱动配置变了driver中得用com.mysql.cj.jdbc.Driver，多了个cjurl后面serverTimezone=UTC必须加1234jdbc.drver=com.mysql.cj.jdbc.Driverjdbc.url=jdbc:mysql://localhost:3306/dbname?useUnicode=true&amp;useSSL=false&amp;serverTimezone=UTCjdbc.username=rootjdbc.password=123456]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hexo + GitHub Page搭建过程及踩过的坑]]></title>
+    <url>%2F2018%2F05%2F15%2FHexo-GitHub-Page%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E5%8F%8A%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91%2F</url>
+    <content type="text"><![CDATA[Hexo是一个快速、简洁且高效的博客框架，拥有超快的速度，支持Markdown语法，而且还支持很多插件。我觉得是非常优秀的。 搭建一个hexo+next主题的博客其实是很简单的，可能刚开始对这个东西不熟悉，不知道怎么使用，如何部署、搭建。但自己动动手，其实你已经成功了一大步，毕竟只有自己踩过了坑，才深有体会。不试一试怎么知道自己那么优秀呢。 总结下来就三个步骤：搭建+部署+备份 搭建 准备hexo的搭建环境(基于windows) 安装git,基本是傻瓜式下一步就好了，注意勾选git bash 安装 Node.js,选择对应版本安装就好。 打开git bash ,执行以下命令，显示 Node.js 版本，安装成功1node -v 安装hexo-cli 安装 Hexo，在电脑中新建一个 compassblog 文件夹存放自己的博客，在文件夹内右键点击 Git Bash 进入命令窗口，执行以下代码： 1npm install -g hexo-cli 初始化 Hexo，得到 hexo 文件夹，用于存放 Hexo 博客所有的文件，包括下面会讲到的主题文件，Git Bash 窗口执行以下代码：（无特别提示，以下代码基本都在 Git Bash 命令窗口执行） 1hexo init hexo 配置 Hexo，进入 hexo 文件夹安装依赖，部署形成的文件，分别执行以下代码： 123cd hexonpm installhexo generate 启动服务器：执行以下代码，可以看到服务器端口号是 4000, 1hexo server 打开浏览器，地址栏输入http://localhost:4000/ ，结果如下图，可以看到，初始化的 Hexo 博客搭建成功，可以访问，（提示：如果访问不到，可能4000端口被占用，如安装了福昕阅读器，使用$ hexo s -p 8080 地址栏输入http://localhost:8080 ）6.至此，hexo本地服务端就已经搭好了部署 将初始化的 Hexo 博客部署到 GitHub Pages 注册一个 Github 帐号，新建一个仓库，仓库名为：githubname.github.io ，如下图所示：（由于我的仓库已经创建，所以会显示仓库已经存在，并且这个仓库的名称必须严格按照 username.github.io 的格式来命名） 进入已经建好的仓库，点击 settings ，找到 GitHub Pages 选项，点击 Choose a theme 选择一个主题，然后点击 select theme 选择主题，如下图所示： 配置 Git 个人信息并建立远程连接：打开一个 Git Bash 窗口，输入下面的命令，具体参考：windows下使用git和github建立远程仓库 12git config --global user.name &quot; GitHub 用户名 &quot;git config --global user.email &quot; GitHub 邮箱 &quot; 修改 hexo 文件夹下的 _config.yml 全局配置文件，修改 deploy 属性代码，将本地 hexo 项目托管到 GitHub 上，如下图所示： 12345deploy: type: git #部署的类型 repository: xxx.git # 仓库地址 branch: master #分支名称 message: hexo deploy #提交信息 执行下面的命令，安装 hexo-deployer-git 插件，快速把代码托管到 GitHub 上 1npm install hexo-deployer-git --save 执行下面的代码命令，将 hexo 项目托管到 GitHub 上 (注：hexo generate 可缩写为 hexo g ， hexo deploy 可缩写为 hexo d) 1hexo clean &amp;&amp; hexo generate &amp;&amp; hexo deploy 浏览器地址栏输入 https://username.github.io/ 访问，可以看到博客已经部署到 GitHub 上，正常访问，如下图所示： 我使用的是next主题,具体怎么切换主题可以参考Hexo next配置备份 为什么要给博客备份呢？当你换台电脑工作或者重装系统了，你的hexo本地环境就没有了，那么辛辛苦苦每话好的主题就得重新配置了。 备份之前先了解下hexo的目录结构 如何备份？采用git的分支操作进行备份。git这个东西用的好就是把利器，用不好就可能会很坑，建议多学学。首先要求一定的git功底,不然很多操作是看不懂的。主要备份的文件是不在hexo目录下的.gitignore文件中的内容，这点hexo官方可能都已经给我们想好了。 具体操作1.克隆下自己的仓库到本地(主要拿到.git文件) 1git clone git@github.com:you/you.github.io.git 打开仓库的文件夹 查看隐藏的项目 复制.git文件到你hexo的文件夹下。 打开git bash 看到master字样就OK了 输入以下命令1234git checkout -b backupgit add .git commit -m &apos;backup&apos;git push origin backup 5 .然后去你的git仓库去看以下是否成功了备份这里有个大坑永远不要在这里切换分支 ，要不你master中的文件就会到你的工作目录里，影响备份，这还不是最骚的，最骚的是你的hexo环境就被破坏了 ，需要你重新配置。如果你git玩的66的，那就当我没说(哈哈)。]]></content>
+      <categories>
+        <category>环境搭建</category>
+      </categories>
+      <tags>
+        <tag>环境搭建</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[强引用、软引用、弱引用、虚引用]]></title>
+    <url>%2F2018%2F04%2F20%2F%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E8%99%9A%E5%BC%95%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[Java中的四种引用及其应用场景是什么？ 强引用: 通常我们使用new操作符创建一个对象时所返回的引用即为强引用 软引用: 若一个对象只能通过软引用到达，那么这个对象在内存不足时会被回收，可用于图片缓存中，内存不足时系统会自动回收不再使用的Bitmap 弱引用: 若一个对象只能通过弱引用到达，那么它就会被回收（即使内存充足），同样可用于图片缓存中，这时候只要Bitmap不再使用就会被回收 虚引用: 虚引用是Java中最“弱”的引用，通过它甚至无法获取被引用的对象，它存在的唯一作用就是当它指向的对象回收时，它本身会被加入到引用队列中，这样我们可以知道它指向的对象何时被销毁。 重点说一下弱引用 Java中的弱引用具体指的是java.lang.ref.WeakReference类，我们首先来看一下官方文档对它做的说明： 弱引用对象的存在不会阻止它所指向的对象被垃圾回收器回收。弱引用最常见的用途是实现规范映射(canonicalizing mappings，比如哈希表）。假设垃圾收集器在某个时间点决定一个对象是弱可达的(weakly reachable)（也就是说当前指向它的全都是弱引用），这时垃圾收集器会清除所有指向该对象的弱引用，然后把这个弱可达对象标记为可终结(finalizable)的，这样它随后就会被回收。与此同时或稍后，垃圾收集器会把那些刚清除的弱引用放入创建弱引用对象时所指定的引用队列(Reference Queue)中。 实际上，Java中存在四种引用，它们由强到弱依次是：强引用、软引用、弱引用、虚引用。下面我们简单介绍下除弱引用外的其他三种引用： 强引用（Strong Reference）：通常我们通过new来创建一个新对象时返回的引用就是一个强引用，若一个对象通过一系列强引用可到达，它就是强可达的(strongly reachable)，那么它就不被回收 软引用（Soft Reference）：软引用和弱引用的区别在于，若一个对象是弱引用可达，无论当前内存是否充足它都会被回收，而软引用可达的对象在内存不充足时才会被回收，因此软引用要比弱引用“强”一些 虚引用（Phantom Reference）：虚引用是Java中最弱的引用，那么它弱到什么程度呢？它是如此脆弱以至于我们通过虚引用甚至无法获取到被引用的对象，虚引用存在的唯一作用就是当它指向的对象被回收后，虚引用本身会被加入到引用队列中，用作记录它指向的对象已被回收。为什么使用弱引用？考虑下面的场景：现在有一个Product类代表一种产品，这个类被设计为不可扩展的，而此时我们想要为每个产品增加一个编号。一种解决方案是使用HashMap&lt;Product, Integer&gt;。于是问题来了，如果我们已经不再需要一个Product对象存在于内存中（比如已经卖出了这件产品），假设指向它的引用为productA，我们这时会给productA赋值为null，然而这时productA过去指向的Product对象并不会被回收，因为它显然还被HashMap引用着。所以这种情况下，我们想要真正的回收一个Product对象，仅仅把它的强引用赋值为null是不够的，还要把相应的条目从HashMap中移除。显然“从HashMap中移除不再需要的条目”这个工作我们不想自己完成，我们希望告诉垃圾收集器：在只有HashMap中的key在引用着Product对象的情况下，就可以回收相应Product对象了。显然，根据前面弱引用的定义，使用弱引用能帮助我们达成这个目的。我们只需要用一个指向Product对象的弱引用对象来作为HashMap中的key就可以了。如何使用弱引用？拿上面介绍的场景举例，我们使用一个指向Product对象的弱引用对象来作为HashMap的key，只需这样定义这个弱引用对象：12Product productA = new Product(...);WeakReference&lt;Product&gt; weakProductA = new WeakReference&lt;&gt;(productA); 现在，若引用对象weakProductA就指向了Product对象productA。那么我们怎么通过weakProduct获取它所指向的Product对象productA呢？很简单，只需要下面这句代码： 1Product product = weakProductA.get(); 实际上，对于这种情况，Java类库为我们提供了WeakHashMap类，使用和这个类，它的键自然就是弱引用对象，无需我们再手动包装原始对象。这样一来，当productA变为null时（表明它所引用的Product已经无需存在于内存中），这时指向这个Product对象的就是由弱引用对象weakProductA了，那么显然这时候相应的Product对象时弱可达的，所以指向它的弱引用会被清除，这个Product对象随即会被回收，指向它的弱引用对象会进入引用队列中。 引用队列下面我们来简单地介绍下引用队列的概念。实际上，WeakReference类有两个构造函数：1234//创建一个指向给定对象的弱引用WeakReference(T referent) //创建一个指向给定对象并且登记到给定引用队列的弱引用WeakReference(T referent, ReferenceQueue&lt;? super T&gt; q) 我们可以看到第二个构造方法中提供了一个ReferenceQueue类型的参数，通过提供这个参数，我们便把创建的弱引用对象注册到了一个引用队列上，这样当它被垃圾回收器清除时，就会把它送入这个引用队列中，我们便可以对这些被清除的弱引用对象进行统一管理。 参考十分钟理解Java中的弱引用 理解Java中的弱引用]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[String真的不可变吗？]]></title>
+    <url>%2F2018%2F03%2F11%2FString%E7%9C%9F%E7%9A%84%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%90%97%EF%BC%9F%2F</url>
+    <content type="text"><![CDATA[首先 简单描述String类String 类代表字符串。Java 程序中的所有字符串字面值（如 “abc” ）都作为此类的实例实现。 字符串是常量；它们的值在创建之后不能更改。字符串缓冲区支持可变的字符串。因为 String 对象是不可变的，所以可以共享。例如： String str = &quot;abc&quot;; 等效于： char data[] = {&apos;a&apos;, &apos;b&apos;, &apos;c&apos;}; String str = new String(data); 下面给出了一些如何使用字符串的更多示例： System.out.println(&quot;abc&quot;); String cde = &quot;cde&quot;; System.out.println(&quot;abc&quot; + cde); String c = &quot;abc&quot;.substring(2,3); String d = cde.substring(1, 2); String 类包括的方法可用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串、创建字符串副本并将所有字符全部转换为大写或小写。大小写映射基于 Character 类指定的 Unicode 标准版。Java 语言提供对字符串串联符号（”+”）以及将其他对象转换为字符串的特殊支持。字符串串联是通过 StringBuilder（或 StringBuffer）类及其 append 方法实现的。字符串转换是通过 toString 方法实现的，该方法由 Object 类定义，并可被 Java 中的所有类继承。以上均摘自 —— [ JDK在线文档 ] 重点来了String不可变很简单，给一个已有字符出纳“ab”第二次赋值成“abc”，不是在原内存地址上修改数据，而是重新指向一个新对象，新地址。如下图所以也就出现了String的不可变性。每当我们给String重新赋值的时候其实就产生了一个新的对象，让之前的引用指向了那个新对象。表面上感觉你修改了String的值，事实上只是指向了new出的新对象，而之前的那个对象因为没有引用了，久而久之就会被垃圾回收了。 那么为什么String不可变呢？打开String源码，会看到一个用final修饰的char类型的字符数组。 在看一下他的构造函数(列举三个，还有很多哦) public String() { this.value = &quot;&quot;.value; } public String(String original) { this.value = original.value; this.hash = original.hash; } public String(char value[]) { this.value = Arrays.copyOf(value, value.length); } 在文章最开始的几行代码中用到了第三个构造函数，看下他是怎么实现的吧。调用了Arrays的copyOf方法，这个copyOf函数实现如下，返回了一个char型数组，然后在构造方法中让自己的不可变value数组指向了该数组。 public static char[] copyOf(char[] original, int newLength) { char[] copy = new char[newLength]; System.arraycopy(original, 0, copy, 0,Math.min(original.length, newLength)); return copy; } String既然是一个final说明是不可继承的，而且用final修饰的char[] ，说明char[]这个创建后就不可改变了。 value是private的，并没有提供公共setValue方法来修改，所以在String类的外部无法访问这个成员。此外value这个变量都是final的，也就是说在String类内部，一旦这个值初始化了，也不能改变，所以可以认为String对象是不可变的。 String真的不可变吗？在我们使用String的时候，创建一个String s 引用，然后让这个引用指向String对象，在让这个引用指向另外一个String对象，System.out一下，看值变了吧，但这个不是我们本质上想改变的东西。认真看一看刚才的源码，发现String的value是比较特殊的，它也是一个引用，那么看到这里 你有什么想法呢？我们是不是也可以让这个value引用指来指去的？事实却相当残酷，这个value被final修饰了，害怕不？所以我们不可以修改这个引用的指向。但是都到这里了，千万不要灰心，我们还是有办法的。 我们修改不了引用，修改他引用指向地址的值总可以吧，但问题又出来了，你怎样访问用private修饰的变量呢 ？黑人问号！ 没错，用反射，可以反射出String对象的char[]，进而改变该value引用改变数组的结构。 123456789public void t() throws NoSuchFieldException, IllegalAccessException &#123; String s = new String(&quot;ab&quot;); System.out.println(s);//输出ab Field field = s.getClass().getDeclaredField(&quot;value&quot;); field.setAccessible(true); char[] value = (char[]) field.get(s); value[0] = &apos;2&apos;; System.out.println(s);//输出2b &#125; 这个过程中，s始终引用的同一个String对象，但是再反射前后，这个String对象发生了变化， 也就是说，通过反射是可以修改所谓的“不可变”对象的。 但是一般我们不这么做。这个反射的实例还可以说明一个问题：如果一个对象，他内部维护对象的状态是可变的，那么这个对象很可能不是不可变对象。就和private final char value[]一样。研究到这，又想去研究常量是不是也能改变，鼠标点了几下发现final关键字没有源码，就到此为止了。]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[解决ubuntu下tomcat关闭异常8005端口问题]]></title>
+    <url>%2F2017%2F12%2F14%2F%E8%A7%A3%E5%86%B3ubuntu%E4%B8%8Btomcat%E5%85%B3%E9%97%AD%E5%BC%82%E5%B8%B88005%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[./shutdown.sh 关闭tomcat时 遇到如下错误 1234567891011121314151617181920SEVERE: Could not contact localhost:8005. Tomcat may not be running.Dec 14, 2017 11:10:15 AM org.apache.catalina.startup.Catalina stopServerSEVERE: Catalina.stop: java.net.ConnectException: Connection refused (Connection refused) at java.net.PlainSocketImpl.socketConnect(Native Method) at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350) at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206) at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188) at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392) at java.net.Socket.connect(Socket.java:589) at java.net.Socket.connect(Socket.java:538) at java.net.Socket.&lt;init&gt;(Socket.java:434) at java.net.Socket.&lt;init&gt;(Socket.java:211) at org.apache.catalina.startup.Catalina.stopServer(Catalina.java:451) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) at java.lang.reflect.Method.invoke(Method.java:498) at org.apache.catalina.startup.Bootstrap.stopServer(Bootstrap.java:400) at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:487) 查看端口 并没有发现8005端口，即为8005端口未运行，使用命令netstat -ant 发现 没有找到8005端口 12345678910root@VM-248-9-ubuntu:/home/ubuntu/apache-tomcat-8.0.47/bin# netstat -antActive Internet connections (servers and established)Proto Recv-Q Send-Q Local Address Foreign Address State tcp 0 0 0.0.0.0:8009 0.0.0.0:* LISTEN tcp 0 0 0.0.0.0:8080 0.0.0.0:* LISTEN tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN tcp 0 388 10.104.248.9:22 117.32.216.63:23990 ESTABLISHEDtcp 409 0 10.104.248.9:8080 117.32.216.63:34145 CLOSE_WAIT tcp 409 0 10.104.248.9:8080 117.32.216.63:34551 CLOSE_WAIT tcp6 0 0 :::22 :::* LISTEN 解决办法 修改$JAVA_HOME/jre/lib/security/Java.security 文件中 securerandom.source 配置项:将securerandom.source=file:/dev/random修改为：securerandom.source=file:/dev/urandom]]></content>
+      <categories>
+        <category>Tomcat</category>
+      </categories>
+      <tags>
+        <tag>Tomcat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[利用javaMail实现QQ邮箱的发件]]></title>
+    <url>%2F2017%2F10%2F18%2F%E5%88%A9%E7%94%A8javaMail%E5%AE%9E%E7%8E%B0QQ%E9%82%AE%E7%AE%B1%E7%9A%84%E5%8F%91%E4%BB%B6%2F</url>
+    <content type="text"><![CDATA[经过两个小时的测试，终于改掉了 530 Error，然后可以把自己的邮件发出去，内心还是有点小几栋的。 一开始总是遇到这个异常Caused by: javax.mail.AuthenticationFailedException: 530 Error: A secure connection is requiered(such as ssl).More information at http://service.mail.qq.com/cgi-bin/help?id=28 然后点了这个链接之后发现是因为客户端设置没有开启POP3/SMTP的SSL加密..没有利用SSL进行授权 解决这两个问题后问题就得到了解决利用这个功能呢，我们可以实现验证、激活、提示的功能以及能利用邮箱办到的事。具体看个人发挥了。比如说：“ 最重要的是 你 想把要说的话 告诉 她 嘿嘿 ” 具体实现mail发邮件功能如下: 准备工作 在项目中导入mail.jar 没有的可以点这里 然后把jar包放入项目lib中 代码实现1.创建Properties对象，设置相关属性和发送协议12Properties props = new Properties();props.setxxx(); 2.设置SSL1234MailSSLSocketFactory sf = new MailSSLSocketFactory();sf.setTrustAllHosts(true);props.put(&quot;mail.smtp.ssl.enable&quot;, &quot;true&quot;);props.put(&quot;mail.smtp.ssl.socketFactory&quot;, sf); 3.创建验证器，设置个人账号和密码12345Authenticator auth = new Authenticator() &#123; public PasswordAuthentication getPasswordAuthentication() &#123; //设置发送人的帐号和密码 return new PasswordAuthentication(&quot;xxx@qq.com&quot;, &quot;授权码&quot;); &#125; 4.创建session会话1Session session = Session.getInstance(props, auth); 5.创建Message邮件内容123456789Message message = new MimeMessage(session);//设置发送者message.setFrom(new InternetAddress(&quot;xxx@qq.com&quot;));//设置发送方式与接收者message.setRecipient(RecipientType.TO, new InternetAddress(email));//email填收件人邮箱//设置邮件主题message.setSubject(&quot;用户激活&quot;);//设置邮件内容message.setContent(emailMsg, &quot;text/html;charset=utf-8&quot;);//emailMsg邮件内容 6.发送1Transport.send(message); 源码1234567891011121314151617181920212223242526272829303132333435363738394041 public static void sendMail(String email, String emailMsg) throws AddressException, MessagingException, GeneralSecurityException &#123; // 1.创建一个程序与邮件服务器会话对象 Session Properties props = new Properties(); //设置发送的协议 props.setProperty(&quot;mail.transport.protocol&quot;, &quot;SMTP&quot;); props.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;);// 指定验证为true //设置发送邮件的服务器 props.setProperty(&quot;mail.host&quot;, &quot;smtp.qq.com&quot;); MailSSLSocketFactory sf = new MailSSLSocketFactory(); sf.setTrustAllHosts(true); props.put(&quot;mail.smtp.ssl.enable&quot;, &quot;true&quot;); props.put(&quot;mail.smtp.ssl.socketFactory&quot;, sf); // 创建验证器 Authenticator auth = new Authenticator() &#123; public PasswordAuthentication getPasswordAuthentication() &#123; //设置发送人的帐号和密码 return new PasswordAuthentication(&quot;xxx@qq.com&quot;, &quot;授权码&quot;); &#125; &#125;; Session session = Session.getInstance(props, auth); // 2.创建一个Message，它相当于是邮件内容 Message message = new MimeMessage(session); //设置发送者 message.setFrom(new InternetAddress(&quot;xxx@qq.com&quot;)); //设置发送方式与接收者 message.setRecipient(RecipientType.TO, new InternetAddress(email)); //设置邮件主题 message.setSubject(&quot;用户激活&quot;)； //设置邮件内容 message.setContent(emailMsg, &quot;text/html;charset=utf-8&quot;); // 3.创建 Transport用于将邮件发送 Transport.send(message);&#125;]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[ubuntu下mysql命令]]></title>
+    <url>%2F2017%2F09%2F16%2Fubuntu%E4%B8%8Bmysql%E5%91%BD%E4%BB%A4%2F</url>
+    <content type="text"><![CDATA[查看数据库最大连接数的配置1mysql&gt; show variables like &apos;%max_connections%&apos;; Max_used_connections 同时使用的连接的最大数目。 Threads_connected 当前打开的连接的数量。 Threads_running 不在睡眠的线程数量。12mysql&gt; show status like &apos;Threads%&apos;;mysql&gt; show status like &apos;%Max_used_connections%&apos;;]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[解决ubuntu中文乱码及如何远程连接MySQL]]></title>
+    <url>%2F2017%2F09%2F16%2F%E8%A7%A3%E5%86%B3ubuntu%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E5%8F%8A%E5%A6%82%E4%BD%95%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5MySQL%2F</url>
+    <content type="text"><![CDATA[解决ubuntu下中文插入乱码问题 下列两种方法1.仅修改一个表的 在建表完成后用以下命令1mysql&gt;alter table tb_name convert to character set utf8; 2.永久解决 打开mysql服务，查看未修改时的字符集 查看字符集命令1mysql&gt;show variables like &apos;%char%&apos;; 然后退出mysql，修改配置: 123456$sudo vim /etc/mysql/conf.d/mysql.cnf添加如下代码:[mysql]default-character-set=utf8[mysqld]character-set-server=utf8 然后查看修改后的字符集 如何在win下远程访问ubuntu下的数据库 首先编辑文件/etc/mysql/mysql.conf.d/mysqld.cnf： 1sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf 然后注释掉bind-address = 127.0.0.1 保存退出，然后进入mysql服务，执行授权命令： 12mysql&gt;grant all on *.* to root@&apos;%&apos; identified by &apos;你的密码&apos; with grant option;mysql&gt;flush privileges; 退出mysql后重启mysql服务 1service mysql restart 然后在windows下（win10亲测）用图形化工具建立连接（我用的navicat） 首先ping一下你的云主机 然后就开心的开始你的编程之旅吧！有问题可以简信给我（笑脸.jpg）]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[MySQL学习]]></title>
+    <url>%2F2017%2F04%2F25%2FMySQL%E5%AD%A6%E4%B9%A0%2F</url>
+    <content type="text"><![CDATA[基本操作curdC：create 创建 U：update 修改 R：read 读|查询 D：delete 删除 #sql分类 # DDL：数据定义语言 操作对象：数据库和表 关键词：create alter drop # DML：数据操作语言 操作对象：记录 # DQL：数据查询语言(非官方) # DCL：数据控制语言 操作对象：用户 事物 权限 ##建表操作 查看表的创建信息 1show create table tb_name； 查看所有数据库 1show databases； 使用数据库 123use db_name；``` - 查看当前正在使用的数据库 select database();1- 查看表结构 show columns form tb_name;1- 插入全部列表数据 insert tb_name values(v1,v2，v3···) ;1- 插入指定列表数据 insert tb_name（列名1，列名5） values(v1,v5);1- 所有记录查找 select * from tb_name ;123456789101112131415- 外键约束作用 保持数据一致性，完整性，实现一对一或一对多关系![](http://upload-images.jianshu.io/upload_images/2568189-59574f5ef0de38fb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)子表：指的是具有外键列的表 子表所参照的表称为父表![](http://upload-images.jianshu.io/upload_images/2568189-3379f4bd627a3be4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)`foreign key (pid) references provinces (id)；`![](http://upload-images.jianshu.io/upload_images/2568189-7eed448a8496539e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)- ##修改数据表- 添加单列 alter table tb_name add tb_name 列定义(int ) [first] | after col_name];1- 删除单列 alter table tb_name drop col_name;1- 添加多列 alter table tb_name add tb_name defined [first] | after col_name],add tb_name defined [first] | after col_name]；1- 添加主键约束 alter table users2 add primary key (id);alter table test add constraint PK_test_id primary key(id);1- 删除主键约束 alter tb_name drop primary ‘key’;1- 添加唯一约束 alter table users2 add unique key (id);1- 删除唯一约束 alter table tb_name drop index dex_name;1- 添加外键约束 alter table users2 add foreign key (id) references refer_tb_name (iid);1- 删除外键约束 alter table tb_name drop foreign key fk_symbol;1- 添加默认约束 alter table tb_name alter col_name set default ‘key’;1- 删除默认约束 alter table tb_name alter col_name drop default;12- 修改列定义 alter table tb_name modify [column] col_namecol_dedinition[first |after col_name] ;1- 修改列名称 alter table tb_name change [column] old_col_name new_col_name column_definition [first | after col_name];1- 数据表更名 alter table tb_name rename [to | as] new _tb_name;12```rename table tb_name1 to new_tb_name [,tb_name2 to new_tb_name]; 删除基本表1drop table tb_name; 清空表1truncate tb_name; 操作数据表中的记录 插入记录1insert tb_name [(col_name,···)] &#123;values | value&#125;(&#123;expr | default&#125;,···),···; 1insert tb_name set col_name=&#123;expr | default&#125;,···; 1insert tb_name [(tb_name)] select...; ##update 更新记录 1update tb_reference set col_name1=&apos;key&apos;,col_name2=&apos;key&apos; [where where_condition]; 删除记录 1delete from tb_name [where where_condition]; 查找记录 1select * from tb_name; 查询去重 1select distinct 字段名 from ta_name; 取别名 1select prince+10 ‘新价格 ’ from tb_name; 限制查找返回记录数量 1select * from tb_name limit 2; ##连接查询 内连接1格式1(推荐)：select a.*,b.* from a [inner] join b on ab_condition 1格式2(隐式)：select a.*,b.* from a ,b where ab_condition 外链接1左外连接：select a.*,b.* from a left [outer] join b on ab_condition 1右外连接:select a.*,b.* from a right [outer] join b on ab_condition 子查询 123是将一个查询的结果作为一张临时的表例子：select user.*,temp.* from user,(select * from orders where price&gt;300) as temp where user.id=temp.id; 获取本地时间 123select now();//获取当前时间select date_format(now(),&apos;%Y年%m月%d日 %H点:%i分%s秒&apos;); delimiter 自定义函数 1create function fun_name returns routine_body; 查看字符集 1show variables like &apos;%char%&apos;; 数据库备份 123在命令行输入mysqldump -uuser -ppwd db_name&gt;备份到的位置eg: mysqldump -uroot -p1234 store&gt;d:\1.sql 数据库还原 1234561.手动创建数据库2.mysql -uroot -p1234 db_name&lt;sql位置eg：mysql -uroot -p1234 store1&lt;d:1.sql或者登陆到mysqlsource sql位置eg：source d:1.sql]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+</search>
