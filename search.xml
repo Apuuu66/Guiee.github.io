@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2018%2F07%2F17%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy]]></content>
-  </entry>
-  <entry>
     <title><![CDATA[MySQL升级8.0后数据库连不上]]></title>
     <url>%2F2018%2F06%2F01%2FMySQL%E5%8D%87%E7%BA%A78-0%E5%90%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E4%B8%8D%E4%B8%8A%2F</url>
     <content type="text"><![CDATA[主要是因为驱动配置变了driver中得用com.mysql.cj.jdbc.Driver，多了个cjurl后面serverTimezone=UTC必须加1234jdbc.drver=com.mysql.cj.jdbc.Driverjdbc.url=jdbc:mysql://localhost:3306/dbname?useUnicode=true&amp;useSSL=false&amp;serverTimezone=UTCjdbc.username=rootjdbc.password=123456]]></content>
