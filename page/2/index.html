@@ -303,7 +303,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/03/11/String真的不可变吗？/">
+    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/04/22/Java中try、catch、finally语句块的执行顺序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Kevin">
@@ -322,7 +322,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/03/11/String真的不可变吗？/" itemprop="url">String真的不可变吗？</a></h1>
+                <a class="post-title-link" href="/2018/04/22/Java中try、catch、finally语句块的执行顺序/" itemprop="url">Java中try、catch、finally语句块的执行顺序</a></h1>
         
 
         <div class="post-meta">
@@ -334,8 +334,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-11T21:47:47+08:00">
-                2018-03-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-22T17:30:30+08:00">
+                2018-04-22
               </time>
             
 
@@ -388,7 +388,384 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1,263
+                  360
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>比较关心的就是三个问题:</p>
+<h4 id="1-在catch中和finally中有无return语句"><a href="#1-在catch中和finally中有无return语句" class="headerlink" title="1. 在catch中和finally中有无return语句"></a>1. 在catch中和finally中有无return语句</h4><p><a href="https://blog.csdn.net/cockroach02/article/details/80186723" target="_blank" rel="noopener">https://blog.csdn.net/cockroach02/article/details/80186723</a></p>
+<h4 id="2-try、catch、finally中return的执行顺序"><a href="#2-try、catch、finally中return的执行顺序" class="headerlink" title="2. try、catch、finally中return的执行顺序"></a>2. try、catch、finally中return的执行顺序</h4><p>finally只有在jvm退出的情况下也就是jvm进程结束，才不会被执行，其他情况下都会先于return语句执行。</p>
+<p>说明一下，</p>
+<ol>
+<li>如果try中的return语句 返回的是一个函数 或者 表达式 <strong>那么会先执行这个函数或者表达式</strong> 然后 finally将这个返回值<strong>结果</strong>包装 ，执行完finally语句块后 再将包装的结果返回。(finally只是对try中return语句的结果做了包装  然而 那个语句还是会先于finally执行的)</li>
+<li>如果finally中有返回语句 则返回finally中的语句。(推荐不使用)</li>
+</ol>
+<h4 id="3-在finally中所修改变量的类型对try中返回结果的影响。"><a href="#3-在finally中所修改变量的类型对try中返回结果的影响。" class="headerlink" title="3. 在finally中所修改变量的类型对try中返回结果的影响。"></a>3. 在finally中所修改变量的类型对try中返回结果的影响。</h4><ol>
+<li>如果try中返回的是一个变量或者修改的是引用 则没有任何影响</li>
+<li>如果修改了那个引用对象的属性值是会变的。那么返回的引用 属性值是会变得</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">User user = new User();</span><br><span class="line">user.setName(&quot;kk&quot;);</span><br><span class="line">try&#123;</span><br><span class="line">    System.out.println(&quot;try block: &quot; + user);</span><br><span class="line">        return user;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        user = new User(&quot;jj&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    //无影响,返回的还是kk</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">User user = new User();</span><br><span class="line">user.setName(&quot;kk&quot;);</span><br><span class="line">try&#123;</span><br><span class="line">    System.out.println(&quot;try block: &quot; + user);</span><br><span class="line">        return user;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        user.setName(&quot;jj&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    //有影响，返回的是修改的jj</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/04/20/强引用、软引用、弱引用、虚引用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kevin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kevin">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/20/强引用、软引用、弱引用、虚引用/" itemprop="url">强引用、软引用、弱引用、虚引用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-20T14:55:41+08:00">
+                2018-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,581
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="Java中的四种引用及其应用场景是什么？"><a href="#Java中的四种引用及其应用场景是什么？" class="headerlink" title="Java中的四种引用及其应用场景是什么？"></a>Java中的四种引用及其应用场景是什么？</h3><ul>
+<li><strong>强引用</strong>: 通常我们使用new操作符创建一个对象时所返回的引用即为强引用</li>
+<li><strong>软引用</strong>: 若一个对象只能通过软引用到达，那么这个对象在内存不足时会被回收，可用于图片缓存中，内存不足时系统会自动回收不再使用的Bitmap</li>
+<li><strong>弱引用</strong>: 若一个对象只能通过弱引用到达，那么它就会被回收（即使内存充足），同样可用于图片缓存中，这时候只要Bitmap不再使用就会被回收</li>
+<li><strong>虚引用</strong>: 虚引用是Java中最“弱”的引用，通过它甚至无法获取被引用的对象，它存在的唯一作用就是当它指向的对象回收时，它本身会被加入到引用队列中，这样我们可以知道它指向的对象何时被销毁。</li>
+</ul>
+<h3 id="重点说一下弱引用"><a href="#重点说一下弱引用" class="headerlink" title="重点说一下弱引用"></a>重点说一下弱引用</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/20/强引用、软引用、弱引用、虚引用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/04/07/锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kevin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kevin">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/07/锁/" itemprop="url">锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-07T10:00:13+08:00">
+                2018-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,409
                 </span>
               
 
@@ -426,403 +803,76 @@
 
       
         
-          <h4 id="首先-简单描述String类"><a href="#首先-简单描述String类" class="headerlink" title="首先 简单描述String类"></a>首先 简单描述String类</h4><p>String 类代表字符串。Java 程序中的所有字符串字面值（如 “abc” ）都作为此类的实例实现。 </p>
-<p>字符串是常量；它们的值在创建之后不能更改。字符串缓冲区支持可变的字符串。因为 String 对象是不可变的，所以可以共享。例如： </p>
-<pre><code>String str = &quot;abc&quot;;
-</code></pre><p> 等效于：   </p>
-<pre><code>char data[] = {&apos;a&apos;, &apos;b&apos;, &apos;c&apos;};
-String str = new String(data);
-</code></pre><p> 下面给出了一些如何使用字符串的更多示例： </p>
-<pre><code>System.out.println(&quot;abc&quot;);
-String cde = &quot;cde&quot;;
-System.out.println(&quot;abc&quot; + cde);
-String c = &quot;abc&quot;.substring(2,3);
-String d = cde.substring(1, 2);
-</code></pre><p> String 类包括的方法可用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串、创建字符串副本并将所有字符全部转换为大写或小写。大小写映射基于 Character 类指定的 Unicode 标准版。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/03/11/String真的不可变吗？/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2017/12/14/解决ubuntu下tomcat关闭异常8005端口问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/14/解决ubuntu下tomcat关闭异常8005端口问题/" itemprop="url">解决ubuntu下tomcat关闭异常8005端口问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-14T11:23:40+08:00">
-                2017-12-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tomcat/" itemprop="url" rel="index">
-                    <span itemprop="name">Tomcat</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  395
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>./shutdown.sh 关闭tomcat时 遇到如下错误</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">SEVERE: Could not contact localhost:8005. Tomcat may not be running.</span><br><span class="line">Dec 14, 2017 11:10:15 AM org.apache.catalina.startup.Catalina stopServer</span><br><span class="line">SEVERE: Catalina.stop: </span><br><span class="line">java.net.ConnectException: Connection refused (Connection refused)</span><br><span class="line">	at java.net.PlainSocketImpl.socketConnect(Native Method)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)</span><br><span class="line">	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)</span><br><span class="line">	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:589)</span><br><span class="line">	at java.net.Socket.connect(Socket.java:538)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:434)</span><br><span class="line">	at java.net.Socket.&lt;init&gt;(Socket.java:211)</span><br><span class="line">	at org.apache.catalina.startup.Catalina.stopServer(Catalina.java:451)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</span><br><span class="line">	at java.lang.reflect.Method.invoke(Method.java:498)</span><br><span class="line">	at org.apache.catalina.startup.Bootstrap.stopServer(Bootstrap.java:400)</span><br><span class="line">	at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:487)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看端口    并没有发现8005端口，即为8005端口未运行，使用命令netstat -ant 发现 没有找到8005端口</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@VM-248-9-ubuntu:/home/ubuntu/apache-tomcat-8.0.47/bin# netstat -ant</span><br><span class="line">Active Internet connections (servers and established)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State      </span><br><span class="line">tcp        0      0 0.0.0.0:8009            0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0    388 10.104.248.9:22         117.32.216.63:23990     ESTABLISHED</span><br><span class="line">tcp      409      0 10.104.248.9:8080       117.32.216.63:34145     CLOSE_WAIT </span><br><span class="line">tcp      409      0 10.104.248.9:8080       117.32.216.63:34551     CLOSE_WAIT </span><br><span class="line">tcp6       0      0 :::22                   :::*                    LISTEN</span><br></pre></td></tr></table></figure>
+            <h3 id="MySQL中的锁"><a href="#MySQL中的锁" class="headerlink" title="MySQL中的锁"></a>MySQL中的锁</h3><p><img src="https://note.youdao.com/yws/res/4639/921464E83B97481191BEF5BC146C3D10" alt="image"></p>
 <ul>
-<li>解决办法<blockquote>
-<p>修改$JAVA_HOME/jre/lib/security/Java.security 文件中 securerandom.source 配置项:<br>将<br>securerandom.source=file:/dev/random<br>修改为：<br>securerandom.source=file:/dev/urandom</p>
+<li>对于UPDATE、DELETE、INSERT语句，InnoDB会自动给涉及数据集加排他锁（X)</li>
+<li><p>MyISAM在执行查询语句SELECT前，会自动给涉及的所有表加读锁，在执行更新操作（UPDATE、DELETE、INSERT等）前，会自动给涉及的表加写锁，这个过程并不需要用户干预<br><--more--></--more--></p>
+<h4 id="表锁简单介绍"><a href="#表锁简单介绍" class="headerlink" title="表锁简单介绍"></a>表锁简单介绍</h4><p>首先，从锁的粒度，我们可以分成两大类：</p>
+</li>
+<li><p><strong>表锁</strong><br>开销小，加锁快；不会出现死锁；锁定力度大，发生锁冲突概率高，并发度最低</p>
+</li>
+<li><strong>行锁</strong><br>开销大，加锁慢；会出现死锁；锁定粒度小，发生锁冲突的概率低，并发度高</li>
+</ul>
+<p>不同的存储引擎支持的锁粒度是不一样的：</p>
+<ul>
+<li><strong>InnoDB行锁和表锁都支持！</strong></li>
+<li><strong>MyISAM只支持表锁！</strong></li>
+</ul>
+<p>InnoDB只有通过<strong>索引条件</strong>检索数据才使用行级锁，否则，InnoDB将使用表锁<br>也就是说，InnoDB的行锁是基于索引的！<br>表锁下又分为两种模式：</p>
+<ul>
+<li><strong>表读锁（Table Read Lock）</strong></li>
+<li><strong>表写锁（Table Write Lock）</strong><br>从下图可以清晰看到，在表读锁和表写锁的环境下：<strong>读读不阻塞，读写阻塞，写写阻塞！</strong></li>
+</ul>
+<p><strong>读读不阻塞：</strong> 当前用户在读数据，其他的用户也在读数据，不会加锁<br><strong>读写阻塞：</strong>当前用户在读数据，其他的用户不能修改当前用户读的数据，会加锁！<br><strong>写写阻塞：</strong>当前用户在修改数据，其他的用户不能修改当前用户正在修改的数据，会加锁！<br><img src="https://note.youdao.com/yws/res/4652/C28CAA580E2246A78C2AFD2C42EF8DDF" alt="image"><br>从上面已经看到了：<strong>读锁和写锁是互斥的，读写操作是串行。</strong></p>
+<p>如果某个进程想要获取读锁，同时另外一个进程想要获取写锁。在mysql里边，写锁是优先于读锁的！<br>写锁和读锁优先级的问题是可以通过参数调节的：max_write_lock_count和low-priority-updates</p>
+<p>值得注意的是：<br><strong>MyISAM</strong>可以支持<strong>查询和插入</strong>操作的<strong>并发</strong>进行。可以通过系统变量concurrent_insert来指定哪种模式，</p>
+<p>在MyISAM中它默认是：如果MyISAM表中没有空洞（即表的中间没有被删除的行），MyISAM允许在一个进程读表的同时，另一个进程从表尾插入记录。</p>
+<p>但是InnoDB存储引擎是不支持的！</p>
+<h4 id="InnoDB实现了以下两种类型的行锁。"><a href="#InnoDB实现了以下两种类型的行锁。" class="headerlink" title="InnoDB实现了以下两种类型的行锁。"></a>InnoDB实现了以下两种类型的行锁。</h4><ul>
+<li><strong>共享锁（S锁）：</strong> 允许一个事务去读一行，阻止其他事务获得相同数据集的排他锁。<br>也叫做读锁：读锁是共享的，多个客户可以同时读取同一个资源，但不允许其他客户修改。</li>
+<li><strong>排他锁（X锁)：</strong> 允许获得排他锁的事务更新数据，阻止其他事务取得相同数据集的共享读锁和排他写锁。<br>也叫做写锁：写锁是排他的，写锁会阻塞其他的写锁和读锁。</li>
+</ul>
+<ul>
+<li><h3 id="乐观锁和悲观锁"><a href="#乐观锁和悲观锁" class="headerlink" title="乐观锁和悲观锁"></a>乐观锁和悲观锁</h3></li>
+</ul>
+<p>无论是Read committed还是Repeatable read隔离级别，都是为了解决读写冲突的问题。</p>
+<p>单纯在Repeatable read隔离级别下我们来考虑一个问题：<img src="https://note.youdao.com/yws/res/4691/5926300819EC4ACBBB647B9314AF290E" alt="image"><br>此时，用户李四的操作就丢失掉了：</p>
+<ul>
+<li>丢失更新：一个事务的更新覆盖了其它事务的更新结果。</li>
+<li>解决的方法：</li>
+<li>使用Serializable隔离级别，事务是串行执行的！</li>
+<li>乐观锁</li>
+<li>悲观锁<blockquote>
+<ul>
+<li>乐观锁是一种思想，具体实现是，表中有一个版本字段，第一次读的时候，获取到这个字段。处理完业务逻辑开始更新的时候，需要再次查看该字段的值是否和第一次的一样。如果一样更新，反之拒绝。之所以叫乐观，因为这个模式没有从数据库加锁，等到更新的时候再判断是否可以更新。</li>
+<li>悲观锁是数据库层面加锁，都会阻塞去等待锁。</li>
+</ul>
 </blockquote>
 </li>
 </ul>
+<ol>
+<li>悲观锁<br>所以，按照上面的例子。我们使用悲观锁的话其实很简单(手动加行锁就行了)：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from xxxx for update</span><br></pre></td></tr></table></figure>
+<p>在<code>select</code> 语句后边加了 <code>for update</code>相当于加了排它锁(写锁)，加了写锁以后，其他的事务就不能对它修改了！需要等待当前事务修改完之后才可以修改.</p>
+<p>也就是说，如果张三使用<code>select ... for update</code>，李四就无法对该条记录修改了~</p>
+<ul>
+<li><strong>间隙锁GAP</strong><br>当我们<strong>用范围条件检索数据</strong>而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给<strong>符合范围条件的已有数据记录的索引项加锁</strong>；对于键值在条件范围内但并不存在的记录，叫做“间隙（GAP)”。InnoDB也会对这个“间隙”加锁，这种锁机制就是所谓的间隙锁。</li>
+</ul>
+<p><strong>值得注意的是：间隙锁只会在Repeatable read隔离级别下使用~</strong></p>
+<p>例子：假如emp表中只有101条记录，其empid的值分别是1,2,…,100,101</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Select * from  emp where empid &gt; 100 for update;</span><br></pre></td></tr></table></figure>
+<p>上面是一个范围查询，InnoDB不仅会对符合条件的empid值为101的记录加锁，也会对empid大于101（这些记录并不存在）的“间隙”加锁。</p>
+<p>InnoDB使用间隙锁的目的有两个：</p>
+<ul>
+<li>为了防止幻读(上面也说了，Repeatable read隔离级别下再通过GAP锁即可避免了幻读)</li>
+<li>满足恢复和复制的需要</li>
+</ul>
+<p>MySQL的恢复机制要求：在一个事务未提交前，其他并发事务不能插入满足其锁定条件的任何记录，也就是不允许出现幻读</p>
+<p><a href="https://www.jianshu.com/p/33e877d616d5" target="_blank" rel="noopener">参考</a></p>
 
           
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2017/10/18/利用javaMail实现QQ邮箱的发件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/18/利用javaMail实现QQ邮箱的发件/" itemprop="url">利用javaMail实现QQ邮箱的发件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-18T19:56:51+08:00">
-                2017-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  716
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>经过两个小时的测试，终于改掉了 <strong><em>530 Error</em></strong>，然后可以把自己的邮件发出去，内心还是有点小几栋的。</p>
-<p>一开始总是遇到这个异常<br><code>Caused by: javax.mail.AuthenticationFailedException: 530 Error: A secure connection is requiered(such as ssl).More information at</code> <a href="http://service.mail.qq.com/cgi-bin/help?id=28" target="_blank" rel="noopener">http://service.mail.qq.com/cgi-bin/help?id=28</a></p>
-<p>然后点了这个链接之后发现是因为客户端设置<strong><em>没有开启POP3/SMTP的SSL加密..没有利用SSL进行授权</em></strong></p>
-<blockquote>
-<p>解决这两个问题后问题就得到了解决<br>利用这个功能呢，我们可以实现验证、激活、提示的功能以及能利用邮箱办到的事。具体看个人发挥了。比如说：<br>“ <em>最重要的是 你 想把要说的话 告诉 她 嘿嘿</em> ”</p>
-</blockquote>
-<h2 id="具体实现mail发邮件功能如下"><a href="#具体实现mail发邮件功能如下" class="headerlink" title="具体实现mail发邮件功能如下:"></a>具体实现mail发邮件功能如下:</h2>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/10/18/利用javaMail实现QQ邮箱的发件/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -864,7 +914,7 @@ String d = cde.substring(1, 2);
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -914,7 +964,7 @@ String d = cde.substring(1, 2);
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -925,7 +975,7 @@ String d = cde.substring(1, 2);
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -936,7 +986,7 @@ String d = cde.substring(1, 2);
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

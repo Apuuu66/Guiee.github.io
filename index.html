@@ -303,6 +303,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/07/22/java内存分配详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kevin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kevin">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/22/java内存分配详解/" itemprop="url">java内存分配详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T19:42:44+08:00">
+                2018-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,539
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>对于java程序员来说，在虚拟机的自动内存管理机制下，不需要显式的对new出来的对象进行free和delete操作。但是了解java是如何进行内存分配的，对我们排查错误具有极大的帮助。</p>
+<p>今天笔者按照所看的书上的内容和自己的理解来简单的谈一下java的内存分配问题。关于java运行时的数据区域，主要涉及以下几个：</p>
+<ul>
+<li><p><strong>程序计数器</strong>：它主要存储的是当期线程所执行的字节码的行号等信息，然后字节码解释器根据计数器中存储的内容来选取下一条需要执行的字节码指。因此，可以看出，每条线程都有一个独立的程序计数器，它是线程私有的。</p>
+</li>
+<li><p><strong>java虚拟机栈和本地方法栈</strong>：这两个我放在一起来说，是因为他们两个的作用非常类似，区别不过是虚拟机栈是为虚拟执行java方法服务，而本地方法栈则为虚拟机使用到的Native方法服务(就是这个方法是用C++/C来实现的，编译成dll供java调用的)。java虚拟机栈也是线程私有的，与线程的生命周期相同。程序中的每个方法在执行的时候都会创建一个栈帧，里面存放了局部变量表、操作栈、动态连接、方法出口信息，局部变量表里存的是程序中基本类型的数据，局部变量和对象的引用等等。每一个方法从调用到完成的过程，就是相应的栈帧在虚拟机栈中压栈和出栈的过程。</p>
+</li>
+<li><p><strong>java堆</strong>：java堆是被所有线程共享的一块区域，它的作用就是存放几乎所有对象的实例，也就是存放new产生的数据（当然还有一些其他技术可以让new出来的数据存放到栈上或其他地方）。</p>
+</li>
+<li><p><strong>方法区</strong>：它也是所有线程共享的内存区域，用于存储已被虚拟机加载的类信息、常量、静态变量等数据。</p>
+</li>
+<li><p><strong>运行时常量池</strong>：在方法区里面又划分了一块区域为运行时常量池，用于存放程序中的一切常量，包含代码中所定义的各种基本类型（如int,long等等）和对象型（如String及数组）的常量值（final）。每个Class文件都会有一个常量池，存放的是常量值的符号引用，当类加载后，会将这部分信息存放到运行时常量池，等到类的解析完成之后，会将符号引用替换成直接引用，与全局字符串池(String pool)中的值保持一致。</p>
+</li>
+</ul>
+<p>下面我们来通过一些具体的例子来说明不同情况下java的内存分配情况：<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/22/java内存分配详解/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/06/01/MySQL升级8-0后数据库连不上/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -650,198 +845,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://wyigui.github.io/2018/04/20/强引用、软引用、弱引用、虚引用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/20/强引用、软引用、弱引用、虚引用/" itemprop="url">强引用、软引用、弱引用、虚引用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-20T14:55:41+08:00">
-                2018-04-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1,581
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="Java中的四种引用及其应用场景是什么？"><a href="#Java中的四种引用及其应用场景是什么？" class="headerlink" title="Java中的四种引用及其应用场景是什么？"></a>Java中的四种引用及其应用场景是什么？</h3><ul>
-<li><strong>强引用</strong>: 通常我们使用new操作符创建一个对象时所返回的引用即为强引用</li>
-<li><strong>软引用</strong>: 若一个对象只能通过软引用到达，那么这个对象在内存不足时会被回收，可用于图片缓存中，内存不足时系统会自动回收不再使用的Bitmap</li>
-<li><strong>弱引用</strong>: 若一个对象只能通过弱引用到达，那么它就会被回收（即使内存充足），同样可用于图片缓存中，这时候只要Bitmap不再使用就会被回收</li>
-<li><strong>虚引用</strong>: 虚引用是Java中最“弱”的引用，通过它甚至无法获取被引用的对象，它存在的唯一作用就是当它指向的对象回收时，它本身会被加入到引用队列中，这样我们可以知道它指向的对象何时被销毁。</li>
-</ul>
-<h3 id="重点说一下弱引用"><a href="#重点说一下弱引用" class="headerlink" title="重点说一下弱引用"></a>重点说一下弱引用</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/04/20/强引用、软引用、弱引用、虚引用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -891,7 +899,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -902,7 +910,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -913,7 +921,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
